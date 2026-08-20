@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: interview-lab
+  web:
+    resources:
+      cache:
+        cachecontrol:
+          no-store: true
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/interview}
+    username: interview
+    password: ${DB_PASSWORD:local-only}
+  sql:
+    init:
+      mode: always
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      timeout: 3s
+  task:
+    scheduling:
+      pool:
+        size: 2
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+  ai:
+    openai:
+      api-key: ${AI_API_KEY:missing}
+      base-url: ${AI_BASE_URL:https://dashscope.aliyuncs.com/compatible-mode/v1}
+      timeout: 60s
+      max-retries: 1
+      chat:
+        options:
+          model: ${AI_CHAT_MODEL:qwen-plus}
+          temperature: 0.4
+      embedding:
+        options:
+          model: ${AI_EMBED_MODEL:text-embedding-v4}
+          dimensions: 1024
+          encoding-format: float
+    retry:
+      max-attempts: 2
+server:
+  error:
+    include-message: never
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+app:
+  worker-name: ${WORKER_NAME:worker-1}

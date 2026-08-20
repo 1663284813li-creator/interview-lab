@@ -1,0 +1,7 @@
+target/
+.env
+.tools/
+tmp/
+*.log
+output/
+node_modules/

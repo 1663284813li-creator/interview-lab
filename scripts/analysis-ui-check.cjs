@@ -1,0 +1,25 @@
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const assert=require('node:assert/strict');
+const fs=require('node:fs/promises');
+let browser;
+(async()=>{
+  browser=await chromium.launch({headless:true,channel:'msedge'});
+  const page=await browser.newPage({viewport:{width:1440,height:1100}});
+  await page.goto('http://127.0.0.1:8080');
+  await page.waitForFunction(()=>document.getElementById('connection').textContent==='服务已连接');
+  await page.locator('[data-view=resume]').click();
+  await page.locator('#resume-file').setInputFiles('tmp/synthetic-scanned.pdf');
+  const started=Date.now();await page.locator('#resume-form button').click();
+  await page.waitForFunction(()=>document.getElementById('resume-form-feedback').textContent.startsWith('已创建任务'),null,{timeout:15000});
+  console.log('PASS 浏览器上传立即创建任务，并显示本地进度提示；ms='+String(Date.now()-started));
+  await page.waitForFunction(()=>[...document.querySelectorAll('#resume-tasks .status')].some(e=>e.textContent==='已完成'),null,{timeout:180000});
+  const completed=await page.locator('#resume-tasks .task pre').first().innerText();assert(completed.length>100);
+  await page.screenshot({path:'tmp/analysis-ui-completed.png',fullPage:true});
+  console.log('PASS 扫描PDF的OCR和千问分析结果自动显示，无需手动刷新');
+  await fs.writeFile('tmp/synthetic-corrupt.pdf','This is intentionally not a PDF.');
+  await page.locator('#resume-file').setInputFiles('tmp/synthetic-corrupt.pdf');
+  await page.locator('#resume-form button').click();
+  await page.waitForFunction(()=>document.querySelector('#resume-tasks .task.failed')?.textContent.includes('无法解析'),null,{timeout:30000});
+  console.log('PASS 损坏PDF显示明确失败原因，任务不会无限等待');
+  await browser.close();
+})().catch(async e=>{console.error(e.message);if(browser)await browser.close();process.exitCode=1;});

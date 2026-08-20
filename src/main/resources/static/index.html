@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interview Lab · AI 智能面试官</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="/"> <span class="logo">i<span>l</span></span><span>Interview Lab<small>你的 AI 面试训练室</small></span></a>
+  <div class="nav-label">WORKSPACE / 工作台</div>
+  <nav aria-label="主导航">
+    <button class="nav active" data-view="interview"><span>◈</span> 模拟面试 <span class="nav-tag">AI</span></button>
+    <button class="nav" data-view="resume"><span>▤</span> 简历分析</button>
+    <button class="nav" data-view="knowledge"><span>▧</span> 知识库问答</button>
+    <button class="nav" data-view="history"><span>◷</span> 训练记录</button>
+  </nav>
+  <div class="sidebar-note"><span class="mini-star">✳</span><h3>把每次回答变成进步</h3><p>真实追问、具体反馈，找到下一次面试的突破口。</p><div>12 个方向 · 专属评估</div></div>
+  <div class="account"><div class="avatar">我</div><div>个人训练空间<small id="connection">正在连接服务…</small></div><span class="online-dot"></span></div>
+</aside>
+<main>
+  <header class="topbar"><div><span class="muted">工作台</span><span class="slash">/</span><span id="breadcrumb">模拟面试</span></div><div class="topbar-right"><span class="privacy">◉ 私人训练空间</span><button id="refresh" class="icon-btn" aria-label="刷新服务与任务">↻</button></div></header>
+  <div class="content">
+    <div id="notice" class="notice hidden" role="status" aria-live="polite"></div>
+    <section id="interview" class="view">
+      <div class="page-heading"><div><div class="eyebrow">PRACTICE WITH PURPOSE</div><h1>为下一次面试，准备得更好。</h1><p>选一个方向，与 AI 面试官展开一次有深度的对话。</p></div><span class="pill"><span class="online-dot"></span> AI 面试训练</span></div>
+      <div class="interview-grid">
+        <div class="panel setup"><div class="panel-title"><span class="step">01</span><h2>定制你的面试</h2></div>
+          <label for="direction">面试方向</label><div id="skill-grid" class="skill-grid"></div><select id="direction" class="hidden" aria-label="面试方向"></select>
+          <label for="level">难度级别</label><select id="level"><option>初级</option><option selected>中级</option><option>高级</option></select>
+          <label for="resume-job">关联简历分析 <span class="optional">可选</span></label><select id="resume-job"><option value="">通用技术面试</option></select>
+          <div class="setup-tip"><span>✦</span><p>AI 会根据你的回答逐步追问，帮你检验理解深度与表达能力。</p></div>
+          <button class="primary wide" id="start">开始模拟面试 <span>↗</span></button>
+          <div class="subnote">一次一道题，按自己的节奏作答</div>
+        </div>
+        <div class="panel conversation"><div class="chat-head"><div class="interviewer-avatar">✳</div><div><h2>AI 面试官</h2><p id="session-state">准备好后，我们就开始</p></div><button class="secondary small" id="finish" disabled>结束并评估</button></div>
+          <div id="chat" class="chat" aria-live="polite"><div class="empty-chat"><div class="orb">✳</div><h3>好的面试，从一次对话开始</h3><p>左侧选择面试方向，开始你的专属训练。<br>无需完美作答，思考过程同样值得被看见。</p><div class="empty-tags"><span>针对性出题</span><span>多轮追问</span><span>智能评估</span></div></div></div>
+          <form id="answer-form" class="composer"><label class="sr-only" for="answer">你的回答</label><textarea id="answer" placeholder="在这里组织你的回答，Shift + Enter 换行…" maxlength="6000" disabled></textarea><div class="composer-bottom"><span>清晰的思路，比标准答案更重要</span><button class="send" id="send-answer" disabled aria-label="提交回答">↑</button></div></form>
+        </div>
+      </div>
+      <div class="bottom-strip"><span>✧ <strong>循序渐进的训练</strong></span><span>选择方向 <i>→</i> 回答与追问 <i>→</i> 获取反馈 <i>→</i> 持续进步</span></div>
+      <div id="report" class="panel report hidden"></div>
+    </section>
+    <section id="resume" class="view hidden">
+      <div class="page-heading"><div><div class="eyebrow">KNOW YOUR STORY</div><h1>让经历，说得更有说服力。</h1><p>分析技能证据、项目描述与岗位匹配，找到值得深挖的内容。</p></div></div>
+      <div class="two-column"><form id="resume-form" class="panel padded"><h2>提交简历</h2><p class="muted">粘贴正文或上传文件，后台将异步完成分析。</p><label for="resume-text">简历正文</label><textarea id="resume-text" class="document-input" placeholder="粘贴教育经历、专业技能和项目经历…" maxlength="60000"></textarea><label for="resume-file">或者上传文件</label><input id="resume-file" type="file" accept=".pdf,.docx,.txt,.md"><p class="subnote">PDF / DOCX / TXT / MD · 最大 5 MB · PDF最多10页 · 扫描PDF自动OCR识别</p><button class="primary wide">提交分析 ↗</button></form><div class="panel padded"><h2>分析任务</h2><p class="muted">完成后，可在模拟面试中关联该简历。</p><div id="resume-tasks" class="task-list"></div></div></div>
+    </section>
+    <section id="knowledge" class="view hidden">
+      <div class="page-heading"><div><div class="eyebrow">GROUNDED IN KNOWLEDGE</div><h1>有据可查，才能理解得更深。</h1><p>把学习资料放进知识库，获取带来源的回答。</p></div></div>
+      <div class="two-column kb-layout"><div class="panel padded"><h2>我的知识库</h2><label for="kb">选择知识库</label><select id="kb"><option value="">请选择</option></select><form id="kb-form" class="inline-form"><label class="sr-only" for="kb-name">新知识库名称</label><input id="kb-name" placeholder="新知识库名称" maxlength="100" required><button class="secondary">创建</button></form><div class="divider"></div><form id="index-form"><label for="knowledge-text">添加学习资料</label><textarea id="knowledge-text" class="document-input" placeholder="粘贴技术文档、学习笔记或项目资料…" maxlength="60000"></textarea><input id="knowledge-file" type="file" accept=".pdf,.docx,.txt,.md" aria-label="上传学习资料"><button class="primary wide">加入知识库 ↗</button></form><div id="index-tasks" class="task-list compact"></div></div><div class="panel conversation"><div class="chat-head"><div class="interviewer-avatar">▧</div><div><h2>知识库助手</h2><p>基于资料回答 · 支持多轮对话</p></div></div><div id="rag-chat" class="chat" aria-live="polite"><div class="empty-chat"><div class="orb">▧</div><h3>把知识，变成自己的答案</h3><p>选择知识库，上传资料后开始提问。<br>引用来源会随回答一起显示。</p></div></div><form id="rag-form" class="composer"><label class="sr-only" for="question">知识库问题</label><textarea id="question" placeholder="关于这些资料，你想了解什么？" maxlength="2000" required></textarea><div class="composer-bottom"><span>资料不足时，AI 会明确告诉你</span><button class="send" aria-label="发送问题">↑</button></div></form></div></div>
+    </section>
+    <section id="history" class="view hidden"><div class="page-heading"><div><div class="eyebrow">PROGRESS, ONE SESSION AT A TIME</div><h1>每一次练习，都有迹可循。</h1><p>回看回答、继续面试，或查看评估与学习计划。</p></div></div><div id="history-list" class="history-grid"></div></section>
+    <footer>INTERVIEW LAB <span>让准备更充分，让表达更自信。</span></footer>
+  </div>
+</main>
+<script type="module" src="app.js"></script>
+</body></html>

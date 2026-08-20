@@ -1,0 +1,9 @@
+# Fast local debugging image; run mvn verify before using compose.local.yaml.
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-chi-sim tesseract-ocr-eng && rm -rf /var/lib/apt/lists/*
+RUN groupadd --system app && useradd --system --gid app app
+COPY target/interview-lab-1.0.0.jar app.jar
+USER app
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
