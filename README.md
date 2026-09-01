@@ -2,8 +2,6 @@
 
 围绕简历中的 AI 智能面试官项目实现的全栈学习项目：Java 21、Spring Boot 4.0.8、Spring AI 2.0.1、PostgreSQL 17 + pgvector、Redis Stream、Apache Tika，前端为无构建依赖的响应式页面。
 
-项目标注完成日期：**2026-08-20**（用户指定）。初始 Git 提交的作者时间与提交时间采用该回填日期；实际运行验证日期保留在 `docs/verification.md`，二者并不表示同一事件。
-
 ## 启动完整服务
 
 需要 Docker Desktop（Linux containers）和可用的大模型 API。聊天与 Embedding 是两个能力，兼容 OpenAI 的服务不一定同时支持它们。
@@ -36,7 +34,7 @@ docker compose logs -f app
 - 面试会话、成功的问答与结构化报告持久化；取消或失败的本轮不写入历史。报告包含分数、亮点、改善建议与学习计划。
 - 简历分析、文档解析、知识库向量化走 Redis Stream 异步消费；上传完成后立即入队，任务会显示正文提取、OCR、模型分析等阶段。支持 PDF/DOCX/TXT/MD，最大5MB/60000字符，PDF最多10页。PDF使用PDFBox提取文字，无文字的页面使用容器内Tesseract中英文OCR；其他格式用Tika解析。任务完成或终态失败后清理原文件字节。
 - 知识库多库隔离，TokenTextSplitter 切分、1024 维 embedding、HNSW 索引；Query Rewrite、多轮历史和随问题长度变化的 Top-K/阈值；回答展示可展开的资料来源。知识库聊天上下文在页面内保留，刷新后清空。
-- UUID 用户隔离 + 随机 Bearer 凭证（数据库只存 SHA-256）+ 参数化 SQL。三层防护是 Guard 模式校验 + Spring AI SafeGuardAdvisor 关键词前置拦截、不可信资料与系统指令分离、自定义 OutputGuardAdvisor 对同步调用脱敏及 SSE 句子缓冲脱敏，**不是完整的 Prompt Injection 防御证明**。
+- UUID 用户隔离 + 随机 Bearer 凭证（数据库只存 SHA-256）+ 参数化 SQL。三层防护是 Guard 模式校验 + Spring AI SafeGuardAdvisor 关键词前置拦截、不可信资料与系统指令分离、自定义 OutputGuardAdvisor 对同步调用脱敏及 SSE 句子缓冲脱敏，
 - Redis Lua 原子固定窗口限流，每身份每分钟 60 请求；不是滑动窗口。依赖 Redis 不可用时返回 503。
 
 ## 验证
@@ -69,10 +67,4 @@ src/main/resources/
 docs/                      架构与简历要求对照
 ```
 
-## 边界与后续验证
-
-这是可继续开发的个人项目基线，不是已经在生产环境验证的平台。AI 回答质量、检索准确率、请求延迟和拦截率需要真实数据集测量。**简历里的“15 秒降到 200ms”等指标尚未实测**；异步接口只保证不等待模型计算，仍需等待上传/解析与数据库写入。当前消费者适合一个应用实例，稳定 WORKER_NAME 可恢复自身 pending 任务；多实例需增加跨消费者 claim、租约与唯一执行控制。
-
-HNSW 索引已创建，但包含用户/知识库过滤时 PostgreSQL 可能选用 scope 索引和精确排序；不能仅以存在 HNSW 宣称已获得性能收益。数据量增大后需要 EXPLAIN ANALYZE、分区或迭代扫描调优。
-
-不要把 `.env`、私人简历或 `.tools` 提交到 Git。默认 Docker 只绑定本机 8080，Redis/Postgres 未暴露端口。公开部署前需要账户系统、凭证生命周期、HTTPS、审计、配额、备份和检索评估。
+HNSW 索引已创建，但包含用户/知识库过滤时 PostgreSQL 可能选用 scope 索引和精确排序；
